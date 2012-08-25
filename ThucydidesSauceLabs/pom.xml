@@ -1,0 +1,185 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>nl.bstoi.brainfart.thucydidessaucelabs</groupId>
+	<artifactId>ThucydidesSauceLabs</artifactId>
+	<packaging>war</packaging>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>Thucydides SauceLabs test web application</name>
+	<url>http://www.bstoi.nl</url>
+
+	<description>
+		<![CDATA[
+			Test if the Hudson SauceLabs plugin can be used for running Thucydides test.
+		]]>
+	</description>
+
+	<properties>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+		<encoding>UTF-8</encoding>
+		<junit.version>4.10</junit.version>
+		<jersey.version>1.13</jersey.version>
+		<thucydides.version>0.9.12</thucydides.version>
+		<jetty.version>7.6.5.v20120716</jetty.version>
+		<slf4j.version>1.6.6</slf4j.version>
+		<commons-logging.version>1.1.1</commons-logging.version>
+		<lombok.version>0.11.4</lombok.version>
+		<jetty.port>48080</jetty.port>
+	</properties>
+
+	<!-- Source code management information -->
+	<scm>
+		<connection>scm:git:git://github.com/Hylke192/BrainFart.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/Hylke1982/BrainFart.git</developerConnection>
+		<url>http://github.com/Hylke1982/BrainFart/ThucydidesSauceLabs</url>
+	</scm>
+
+	<!-- Dependencies -->
+	<dependencies>
+
+		<!-- Jersey -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Lombok version -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.thucydides</groupId>
+			<artifactId>thucydides-junit</artifactId>
+			<version>${thucydides.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+
+	<build>
+		<finalName>ThucydidesSauceLabs</finalName>
+		<plugins>
+			<!-- Compiler -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+
+			<!-- Default jetty configuration -->
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<scanintervalseconds>15</scanintervalseconds>
+					<reload>manual</reload>
+					<scantargets>
+						<scantarget>target/classes</scantarget>
+					</scantargets>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>${jetty.port}</port>
+							<maxIdleTime>15000</maxIdleTime>
+						</connector>
+					</connectors>
+					<webAppSourceDirectory>${basedir}/src/main/webapp</webAppSourceDirectory>
+					<webAppConfig>
+						<defaultsDescriptor>${basedir}/src/test/resources/web/jetty/webdefault.xml</defaultsDescriptor>
+						<contextPath>/</contextPath>
+						<resourceBases>
+							<resourceBase>${basedir}/src/main/webapp</resourceBase>
+							<resourceBase>${project.build.directory}/${project.build.finalName}</resourceBase>
+						</resourceBases>
+						<sessionHandler implementation="org.eclipse.jetty.server.session.SessionHandler">
+							<sessionManager
+								implementation="org.eclipse.jetty.server.session.HashSessionManager">
+								<sessionIdPathParameterName>none</sessionIdPathParameterName>
+							</sessionManager>
+						</sessionHandler>
+					</webAppConfig>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+	<profiles>
+		<profile>
+			<id>remoteIntegrationTests</id>
+			<properties>
+				<jetty.port>9000</jetty.port>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>jetty-maven-plugin</artifactId>
+						<configuration>
+							<scanIntervalSeconds>10</scanIntervalSeconds>
+							<stopKey>foo</stopKey>
+							<stopPort>9999</stopPort>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start-jetty</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<scanIntervalSeconds>0</scanIntervalSeconds>
+									<daemon>true</daemon>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stop-jetty</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+</project>
