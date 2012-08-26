@@ -20,7 +20,7 @@
 		<encoding>UTF-8</encoding>
 		<junit.version>4.10</junit.version>
 		<jersey.version>1.13</jersey.version>
-		<thucydides.version>0.9.12</thucydides.version>
+		<thucydides.version>0.9.17</thucydides.version>
 		<jetty.version>7.6.5.v20120716</jetty.version>
 		<slf4j.version>1.6.6</slf4j.version>
 		<commons-logging.version>1.1.1</commons-logging.version>
@@ -42,6 +42,11 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-servlet</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
 
@@ -147,6 +152,7 @@
 			</properties>
 			<build>
 				<plugins>
+
 					<plugin>
 						<groupId>org.mortbay.jetty</groupId>
 						<artifactId>jetty-maven-plugin</artifactId>
@@ -173,6 +179,29 @@
 								<goals>
 									<goal>stop</goal>
 								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.12.1</version>
+						<configuration>
+							<systemPropertyVariables>
+								<webdriver.base.url>http://localhost:${jetty.port}</webdriver.base.url>
+							</systemPropertyVariables>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*Story.java</include>
+									</includes>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
