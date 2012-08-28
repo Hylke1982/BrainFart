@@ -189,6 +189,9 @@
 						<configuration>
 							<systemPropertyVariables>
 								<webdriver.base.url>http://localhost:${jetty.port}</webdriver.base.url>
+								<saucelabs.user.id>[saucelabs userid]</saucelabs.user.id>
+								<saucelabs.access.key>[saucelabs api key]</saucelabs.access.key>
+								<saucelabs.url>http://${saucelabs.user.id}:${saucelabs.access.key}@localhost:4445/wd/hub</saucelabs.url>
 							</systemPropertyVariables>
 						</configuration>
 						<executions>
