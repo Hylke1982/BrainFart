@@ -149,6 +149,8 @@
 			<id>remoteIntegrationTests</id>
 			<properties>
 				<jetty.port>9000</jetty.port>
+				<saucelabs.user.id>[saucelabs userid]</saucelabs.user.id>
+				<saucelabs.access.key>[saucelabs api key]</saucelabs.access.key>
 			</properties>
 			<build>
 				<plugins>
@@ -189,8 +191,9 @@
 						<configuration>
 							<systemPropertyVariables>
 								<webdriver.base.url>http://localhost:${jetty.port}</webdriver.base.url>
-								<saucelabs.user.id>[saucelabs userid]</saucelabs.user.id>
-								<saucelabs.access.key>[saucelabs api key]</saucelabs.access.key>
+								<webdriver.remote.url>http://localhost:${jetty.port}</webdriver.remote.url>
+								<saucelabs.user.id>${saucelabs.user.id}</saucelabs.user.id>
+								<saucelabs.access.key>${saucelabs.access.key}</saucelabs.access.key>
 								<saucelabs.url>http://${saucelabs.user.id}:${saucelabs.access.key}@localhost:4445/wd/hub</saucelabs.url>
 							</systemPropertyVariables>
 						</configuration>
